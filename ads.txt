@@ -1,0 +1,2 @@
+# بعد قبولك في AdSense استبدل السطر التالي برقم الناشر الخاص بك واحذف علامة #
+# google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0

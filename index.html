@@ -1,0 +1,833 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Khaldz — تطبيقات وألعاب عربية للجوال</title>
+  <meta name="description" content="تطبيقات أندرويد وألعاب 2D عربية مجانية للتحميل مباشرة بصيغة APK.">
+  <meta name="theme-color" content="#111827">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%232dd4bf'/><stop offset='1' stop-color='%230d9488'/></linearGradient></defs><rect width='64' height='64' rx='16' fill='url(%23g)'/><path d='M20 16h8v13l10-13h9L36 30l12 18h-9l-8-12-3 3v9h-8z' fill='%230f172a'/></svg>">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['"IBM Plex Sans Arabic"', 'system-ui', 'Segoe UI', 'sans-serif'] },
+          colors: { ink: '#111827' }
+        }
+      }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+
+  <!-- Google AdSense: بعد القبول احذف علامات التعليق وضع رقم الناشر
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+  -->
+
+  <style>
+    html { scroll-behavior: smooth; }
+    .grid-bg {
+      background-image:
+        linear-gradient(rgba(148,163,184,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148,163,184,.03) 1px, transparent 1px);
+      background-size: 44px 44px;
+      -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 75%);
+              mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 75%);
+    }
+    .glass {
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      -webkit-backdrop-filter: blur(18px);
+              backdrop-filter: blur(18px);
+    }
+    .glow-border { position: relative; }
+    .glow-border::before {
+      content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none;
+      background: linear-gradient(135deg, rgba(94,234,212,.28), rgba(255,255,255,.04) 45%, rgba(94,234,212,.18));
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude;
+      opacity: 0; transition: opacity .3s;
+    }
+    .glow-border:hover::before { opacity: 1; }
+    .pixel { image-rendering: pixelated; shape-rendering: crispEdges; }
+    @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+    .rise { animation: rise .55s cubic-bezier(.2,.7,.2,1) both; }
+    @keyframes float { 50% { transform: translateY(-4px); } }
+    .float { animation: float 9s ease-in-out infinite; }
+    @media (prefers-reduced-motion: reduce) { .rise, .float { animation: none; } html { scroll-behavior: auto; } }
+    .shots-scroll { scrollbar-width: thin; scrollbar-color: rgba(148,163,184,.25) transparent; }
+    .shots-scroll::-webkit-scrollbar { height: 6px; }
+    .shots-scroll::-webkit-scrollbar-thumb { background: rgba(148,163,184,.25); border-radius: 9px; }
+    dialog::backdrop { background: rgba(2,6,23,.75); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+  </style>
+</head>
+
+<body class="min-h-screen bg-ink font-sans text-slate-300 antialiased selection:bg-teal-400/25 selection:text-white">
+
+  <!-- خلفية زخرفية -->
+  <div aria-hidden="true" class="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+    <div class="grid-bg absolute inset-0"></div>
+    <div class="absolute -top-40 left-1/2 h-[34rem] w-[34rem] -translate-x-1/2 rounded-full bg-teal-500/[.06] blur-[140px]"></div>
+    <div class="absolute top-[40rem] -right-40 h-[26rem] w-[26rem] rounded-full bg-teal-500/[.03] blur-[140px]"></div>
+  </div>
+
+  <!-- ================= الشريط العلوي ================= -->
+  <header id="header" class="sticky top-0 z-50 border-b border-transparent transition-colors duration-300">
+    <div class="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4 sm:px-6">
+      <a href="#home" class="flex items-center gap-2.5 text-white">
+        <span class="grid h-9 w-9 place-items-center rounded-xl bg-teal-500">
+          <span class="text-lg font-bold leading-none text-slate-950">K</span>
+        </span>
+        <span class="text-lg font-bold tracking-tight" data-site-name>Khaldz</span>
+      </a>
+
+      <nav class="ms-6 hidden items-center gap-1 md:flex">
+        <a href="#home" class="rounded-lg px-3 py-2 text-sm text-slate-400 transition hover:bg-white/5 hover:text-white" data-i18n="nav_home">الرئيسية</a>
+        <a href="#work" data-filter-link="app" class="rounded-lg px-3 py-2 text-sm text-slate-400 transition hover:bg-white/5 hover:text-white" data-i18n="nav_apps">تطبيقات</a>
+        <a href="#work" data-filter-link="game" class="rounded-lg px-3 py-2 text-sm text-slate-400 transition hover:bg-white/5 hover:text-white" data-i18n="nav_games">ألعاب</a>
+        <a href="#about" class="rounded-lg px-3 py-2 text-sm text-slate-400 transition hover:bg-white/5 hover:text-white" data-i18n="nav_about">حولنا</a>
+        <a href="#contact" class="rounded-lg px-3 py-2 text-sm text-slate-400 transition hover:bg-white/5 hover:text-white" data-i18n="nav_contact">اتصل بنا</a>
+      </nav>
+
+      <div class="ms-auto flex items-center gap-2">
+        <!-- زر ادعمنا -->
+        <button type="button" data-support
+          class="inline-flex h-9 items-center gap-1.5 rounded-full border border-rose-300/20 bg-rose-400/10 px-3.5 text-xs font-semibold text-rose-100 transition hover:border-rose-300/40 hover:bg-rose-400/15">
+          <i data-lucide="heart" class="h-3.5 w-3.5 fill-rose-300/80 text-rose-300"></i>
+          <span data-i18n="nav_support">ادعمنا</span>
+        </button>
+        <!-- مبدّل اللغة -->
+        <button id="langToggle" type="button" aria-label="Switch language"
+          class="glass flex items-center rounded-full border border-white/10 p-1 text-xs font-semibold transition hover:border-teal-400/40">
+          <span data-lang-opt="ar" class="rounded-full px-3 py-1.5 transition">عربي</span>
+          <span data-lang-opt="en" class="rounded-full px-3 py-1.5 transition">EN</span>
+        </button>
+        <button id="menuBtn" type="button" aria-label="Menu" aria-expanded="false"
+          class="glass grid h-9 w-9 place-items-center rounded-xl border border-white/10 text-slate-300 md:hidden">
+          <i data-lucide="menu" class="h-5 w-5"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- قائمة الجوال -->
+    <div id="mobileMenu" class="hidden border-t border-white/5 bg-ink/95 backdrop-blur-xl md:hidden">
+      <nav class="mx-auto flex max-w-6xl flex-col px-4 py-3">
+        <a href="#home" class="rounded-lg px-3 py-3 text-slate-300 hover:bg-white/5" data-i18n="nav_home">الرئيسية</a>
+        <a href="#work" data-filter-link="app" class="rounded-lg px-3 py-3 text-slate-300 hover:bg-white/5" data-i18n="nav_apps">تطبيقات</a>
+        <a href="#work" data-filter-link="game" class="rounded-lg px-3 py-3 text-slate-300 hover:bg-white/5" data-i18n="nav_games">ألعاب</a>
+        <a href="#about" class="rounded-lg px-3 py-3 text-slate-300 hover:bg-white/5" data-i18n="nav_about">حولنا</a>
+        <a href="#contact" class="rounded-lg px-3 py-3 text-slate-300 hover:bg-white/5" data-i18n="nav_contact">اتصل بنا</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- ================= الواجهة ================= -->
+    <section id="home" class="scroll-mt-20">
+      <div class="mx-auto grid max-w-6xl items-center gap-14 px-4 pb-20 pt-14 sm:px-6 lg:grid-cols-[1.1fr_.9fr] lg:pb-28 lg:pt-20">
+        <div class="rise text-center lg:text-start">
+          <a href="#work" class="glass inline-flex items-center gap-2 rounded-full border border-teal-400/25 px-3.5 py-1.5 text-xs font-medium text-teal-300 transition hover:border-teal-400/50">
+            <span class="relative flex h-2 w-2">
+                            <span class="relative inline-flex h-2 w-2 rounded-full bg-teal-400"></span>
+            </span>
+            <span data-i18n="hero_badge">جديد: حاسبة البلوت 1.6.13</span>
+          </a>
+
+          <h1 class="mt-6 text-4xl font-bold leading-[1.25] tracking-tight text-white sm:text-5xl lg:text-6xl">
+            <span data-i18n="hero_t1">استكشف أحدث</span><br>
+            <span class="text-teal-300" data-i18n="hero_t2">تطبيقاتنا وألعابنا</span>
+          </h1>
+
+          <p class="mx-auto mt-6 max-w-xl text-base leading-8 text-slate-400 sm:text-lg lg:mx-0" data-i18n="hero_sub">
+            تطبيقات أندرويد عربية تسهّل يومك، وألعاب 2D نصنعها بشغف. كلها مجانية وتنزل مباشرة على جوالك.
+          </p>
+
+          <div class="mt-9 flex flex-col items-center gap-3 sm:flex-row sm:justify-center lg:justify-start">
+            <a href="#work" class="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-teal-500 px-7 py-3.5 font-semibold text-slate-950 transition hover:bg-teal-400 sm:w-auto">
+              <span data-i18n="hero_cta">استكشف الأعمال</span>
+              <i data-lucide="arrow-left" class="h-4 w-4 transition group-hover:-translate-x-1 ltr:rotate-180 ltr:group-hover:translate-x-1"></i>
+            </a>
+            <a href="#contact" class="glass inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 px-7 py-3.5 font-medium text-slate-200 transition hover:border-white/25 sm:w-auto">
+              <i data-lucide="message-circle" class="h-4 w-4"></i>
+              <span data-i18n="hero_cta2">تواصل معنا</span>
+            </a>
+          </div>
+
+          <dl class="mx-auto mt-12 grid max-w-md grid-cols-3 gap-3 lg:mx-0">
+            <div class="glass flex flex-col-reverse rounded-2xl border border-white/10 px-3 py-4 text-center">
+              <dt class="mt-1 text-xs text-slate-500" data-i18n="stat1_l">مجانية</dt>
+              <dd class="text-xl font-bold text-white">100%</dd>
+            </div>
+            <div class="glass flex flex-col-reverse rounded-2xl border border-white/10 px-3 py-4 text-center">
+              <dt class="mt-1 text-xs text-slate-500" data-i18n="stat2_l">تحميل مباشر</dt>
+              <dd class="text-xl font-bold text-white">APK</dd>
+            </div>
+            <div class="glass flex flex-col-reverse rounded-2xl border border-white/10 px-3 py-4 text-center">
+              <dt class="mt-1 text-xs text-slate-500" data-i18n="stat3_l">واجهة عربية</dt>
+              <dd class="text-xl font-bold text-white" data-i18n="stat3_v">عربي</dd>
+            </div>
+          </dl>
+        </div>
+
+        <!-- موك أب الجوال -->
+        <div class="rise relative mx-auto w-full max-w-sm [animation-delay:.12s]">
+          <div class="absolute inset-10 rounded-full bg-teal-500/[.07] blur-3xl"></div>
+          <div class="float relative mx-auto w-[17rem] rounded-[2.6rem] border border-white/15 bg-slate-950 p-2.5 shadow-2xl shadow-black/60">
+            <div id="heroScreen" class="overflow-hidden rounded-[2.1rem] bg-gradient-to-b from-slate-900 to-slate-950"></div>
+          </div>
+          <div class="glass float absolute -start-2 top-24 hidden items-center gap-2 rounded-2xl border border-white/10 px-3.5 py-2.5 shadow-xl [animation-delay:-2s] sm:flex">
+            <span class="grid h-8 w-8 place-items-center rounded-lg bg-teal-400/15 text-teal-300"><i data-lucide="download" class="h-4 w-4"></i></span>
+            <span class="text-xs leading-tight"><b class="block text-white">APK</b><span class="text-slate-400" data-hero-size>17 م.ب</span></span>
+          </div>
+          <div class="glass float absolute -end-2 bottom-20 hidden items-center gap-2 rounded-2xl border border-white/10 px-3.5 py-2.5 shadow-xl [animation-delay:-4s] sm:flex">
+            <span class="grid h-8 w-8 place-items-center rounded-lg bg-teal-400/15 text-teal-300"><i data-lucide="badge-check" class="h-4 w-4"></i></span>
+            <span class="text-xs font-semibold text-white" data-i18n="chip_free">مجاني 100%</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= معرض الأعمال ================= -->
+    <section id="work" class="scroll-mt-20 border-t border-white/5">
+      <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:py-24">
+        <div class="flex flex-col items-center justify-between gap-6 text-center md:flex-row md:items-end md:text-start">
+          <div>
+            <p class="text-sm font-semibold text-teal-300" data-i18n="work_eyebrow">المعرض</p>
+            <h2 class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl" data-i18n="work_title">تطبيقات وألعاب</h2>
+            <p class="mt-3 max-w-md text-slate-400" data-i18n="work_sub">اختر العمل وحمّله مباشرة على جوالك الأندرويد.</p>
+          </div>
+          <div id="filters" role="tablist" class="glass inline-flex rounded-xl border border-white/10 p-1"></div>
+        </div>
+
+        <div id="grid" class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"></div>
+
+        <!-- مكان إعلان — فعّله بعد قبول AdSense -->
+        <div id="ad-slot-1" class="hidden"></div>
+      </div>
+    </section>
+
+    <!-- ================= حولنا ================= -->
+    <section id="about" class="scroll-mt-20 border-t border-white/5">
+      <div class="mx-auto grid max-w-6xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:items-center lg:py-24">
+        <div class="text-center lg:text-start">
+          <p class="text-sm font-semibold text-teal-300" data-i18n="about_eyebrow">حولنا</p>
+          <h2 class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl" data-i18n="about_title">نصنع أدوات وألعاب نحتاجها فعلًا</h2>
+          <p class="mt-5 leading-8 text-slate-400" data-i18n="about_p">مطوّر مستقل يبني تطبيقات عربية بـ Flutter وألعاب ثنائية الأبعاد بمحرك Godot.</p>
+        </div>
+        <div class="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
+          <div class="glass glow-border flex items-start gap-4 rounded-2xl border border-white/5 p-5">
+            <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-teal-400/10 text-teal-300"><i data-lucide="smartphone" class="h-5 w-5"></i></span>
+            <div><h3 class="font-semibold text-white" data-i18n="about_c1_t">تطبيقات Flutter</h3><p class="mt-1 text-sm leading-6 text-slate-400" data-i18n="about_c1_d"></p></div>
+          </div>
+          <div class="glass glow-border flex items-start gap-4 rounded-2xl border border-white/5 p-5">
+            <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-teal-400/10 text-teal-300"><i data-lucide="gamepad-2" class="h-5 w-5"></i></span>
+            <div><h3 class="font-semibold text-white" data-i18n="about_c2_t">ألعاب 2D</h3><p class="mt-1 text-sm leading-6 text-slate-400" data-i18n="about_c2_d"></p></div>
+          </div>
+          <div class="glass glow-border flex items-start gap-4 rounded-2xl border border-white/5 p-5">
+            <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-teal-400/10 text-teal-300"><i data-lucide="heart" class="h-5 w-5"></i></span>
+            <div><h3 class="font-semibold text-white" data-i18n="about_c3_t">مجانية دائمًا</h3><p class="mt-1 text-sm leading-6 text-slate-400" data-i18n="about_c3_d"></p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= اتصل بنا ================= -->
+    <section id="contact" class="scroll-mt-20 px-4 pb-24 sm:px-6">
+      <div class="glass glow-border relative mx-auto max-w-4xl overflow-hidden rounded-3xl border border-white/5 px-6 py-14 text-center sm:px-12">
+                <span class="relative mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-teal-500/15 text-teal-300">
+          <i data-lucide="mail" class="h-6 w-6"></i>
+        </span>
+        <p class="relative mt-6 text-sm font-semibold text-teal-300" data-i18n="contact_eyebrow">اتصل بنا</p>
+        <h2 class="relative mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl" data-i18n="contact_title">عندك فكرة أو ملاحظة؟</h2>
+        <p class="relative mx-auto mt-4 max-w-lg leading-8 text-slate-400" data-i18n="contact_sub"></p>
+        <a id="contactBtn" href="#" class="relative mt-8 inline-flex items-center gap-2 rounded-xl bg-teal-500 px-6 py-3.5 font-semibold text-slate-950 transition hover:bg-teal-400">
+          <i data-lucide="send" class="h-4 w-4 ltr:rotate-0 rtl:-scale-x-100"></i>
+          <span data-i18n="contact_btn">أرسل بريدًا</span>
+        </a>
+        <p class="relative mt-4 text-sm text-slate-500" dir="ltr" data-contact-email></p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= التذييل ================= -->
+  <footer class="border-t border-white/5">
+    <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-4 py-10 sm:px-6 md:flex-row">
+      <div class="flex items-center gap-2.5">
+        <span class="grid h-8 w-8 place-items-center rounded-lg bg-teal-500">
+          <span class="text-sm font-bold leading-none text-slate-950">K</span>
+        </span>
+        <span class="font-semibold text-white" data-site-name>Khaldz</span>
+        <span class="hidden text-sm text-slate-500 sm:inline" data-i18n="footer_tag">— تطبيقات وألعاب عربية مجانية</span>
+      </div>
+      <nav class="flex items-center gap-6 text-sm">
+        <button type="button" data-legal="privacy" class="text-slate-400 transition hover:text-teal-300" data-i18n="footer_privacy">سياسة الخصوصية</button>
+        <button type="button" data-legal="terms" class="text-slate-400 transition hover:text-teal-300" data-i18n="footer_terms">الشروط والأحكام</button>
+      </nav>
+      <p class="text-sm text-slate-500">© <span id="year">2026</span> <span data-site-name>Khaldz</span>. <span data-i18n="footer_rights">جميع الحقوق محفوظة.</span></p>
+    </div>
+  </footer>
+
+  <!-- نافذة ادعمنا -->
+  <dialog id="support" class="m-auto w-[calc(100%-2rem)] max-w-md rounded-2xl border border-white/10 bg-slate-900 p-0 text-slate-300 shadow-2xl">
+    <div class="relative px-6 pb-7 pt-9 text-center">
+      <button type="button" data-close class="absolute end-3 top-3 grid h-9 w-9 place-items-center rounded-lg text-slate-400 hover:bg-white/5 hover:text-white" aria-label="Close">
+        <i data-lucide="x" class="h-5 w-5"></i>
+      </button>
+      <span class="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-rose-400/10 text-rose-300">
+        <i data-lucide="heart-handshake" class="h-8 w-8"></i>
+      </span>
+      <h2 class="mt-5 text-2xl font-bold text-white" data-i18n="sup_title">ادعمنا</h2>
+      <p class="mx-auto mt-3 max-w-sm text-sm leading-7 text-slate-400" data-i18n="sup_body"></p>
+      <div id="supportState" class="mt-7" aria-live="polite"></div>
+    </div>
+  </dialog>
+
+  <!-- نافذة صور التطبيق -->
+  <dialog id="gallery" class="m-auto w-[calc(100%-2rem)] max-w-3xl rounded-2xl border border-white/10 bg-slate-900 p-0 text-slate-300 shadow-2xl">
+    <div class="flex items-center gap-3 border-b border-white/10 px-6 py-4">
+      <div id="galleryHead" class="flex min-w-0 flex-1 items-center gap-3"></div>
+      <button type="button" data-close class="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-slate-400 hover:bg-white/5 hover:text-white" aria-label="Close">
+        <i data-lucide="x" class="h-5 w-5"></i>
+      </button>
+    </div>
+    <div id="galleryBody" class="max-h-[75vh] overflow-y-auto px-6 py-5"></div>
+  </dialog>
+
+  <!-- نافذة الخصوصية / الشروط -->
+  <dialog id="legal" class="m-auto w-[calc(100%-2rem)] max-w-xl rounded-2xl border border-white/10 bg-slate-900 p-0 text-slate-300 shadow-2xl">
+    <div class="flex items-center justify-between border-b border-white/10 px-6 py-4">
+      <h2 id="legalTitle" class="text-lg font-bold text-white"></h2>
+      <button type="button" id="legalClose" class="grid h-9 w-9 place-items-center rounded-lg text-slate-400 hover:bg-white/5 hover:text-white" aria-label="Close">
+        <i data-lucide="x" class="h-5 w-5"></i>
+      </button>
+    </div>
+    <div id="legalBody" class="max-h-[65vh] space-y-4 overflow-y-auto px-6 py-5 text-sm leading-7 [&_h3]:font-semibold [&_h3]:text-white"></div>
+  </dialog>
+
+<script>
+/* =====================================================================
+   الإعدادات — عدّل هنا فقط
+   ===================================================================== */
+const SITE = {
+  name:  { ar: 'Khaldz', en: 'Khaldz' },
+  email: 'ps3oldr702@gmail.com'       // بريد التواصل العام
+};
+
+/* خانة "ادعمنا": إعلان بمكافأة (Rewarded) من Google Ad Manager.
+   بعد إنشاء وحدة إعلانية من نوع Rewarded ضع مسارها هنا، مثال: '/1234567/khaldz_support'
+   ما دامت فاضية تظهر للزائر رسالة "تتفعّل قريبًا" */
+const SUPPORT = {
+  adUnit: ''
+};
+
+/* لإضافة تطبيق أو لعبة: انسخ كائنًا من القائمة وعدّله.
+   type: 'app' أو 'game' | icon: مسار صورة الأيقونة | shots: لقطات الشاشة (أول صورة تظهر في الكرت)
+   rating: رقم من 5 أو null إذا ما فيه تقييمات حقيقية | soon: true يعرض "قريبًا" بدل زر التحميل */
+const WORKS = [
+  {
+    id: 'baloot',
+    type: 'app',
+    icon: 'assets/baloot/icon.png',
+    name: { ar: 'حاسبة البلوت', en: 'Baloot Calculator' },
+    desc: {
+      ar: 'احسب نقاط البلوت السعودي بسهولة: سجّل صكّات الصن والحكم، وخلّ المساعد يحسب الأبناط من أوراقك، وتابع النتيجة لين 152.',
+      en: 'Score Saudi Baloot with ease: log Sun and Hokm rounds, let the assistant count points from your cards, and follow the score to 152.'
+    },
+    tags: [{ ar: 'بلوت', en: 'Baloot' }, { ar: 'أدوات', en: 'Tools' }],
+    features: [
+      { ar: 'تسجيل الصكّات بنوعيها: صن وحكم', en: 'Log both Sun and Hokm rounds' },
+      { ar: 'مساعد يحسب الأبناط من عدد الأوراق', en: 'Assistant that counts points from your cards' },
+      { ar: 'جدول نتائج بشكل الورقة التقليدية', en: 'Classic paper-style score sheet' },
+      { ar: 'التراجع، وتصفير العدادات، ودق الولد', en: 'Undo, reset counters, and pick the dealer' },
+      { ar: 'قواعد البلوت السعودي داخل التطبيق', en: 'Saudi Baloot rules built in' },
+      { ar: 'ثلاث مظاهر وشكلين لأوراق اللعب', en: 'Three themes and two card styles' }
+    ],
+    shots: [
+      { src: 'assets/baloot/01home.webp',      cap: { ar: 'الشاشة الرئيسية', en: 'Home' } },
+      { src: 'assets/baloot/02round.webp',     cap: { ar: 'إدخال صكّة',      en: 'Add a round' } },
+      { src: 'assets/baloot/03assistant.webp', cap: { ar: 'المساعد',         en: 'Assistant' } },
+      { src: 'assets/baloot/04paper.webp',     cap: { ar: 'جدول الورقة',     en: 'Paper sheet' } },
+      { src: 'assets/baloot/05rules.webp',     cap: { ar: 'القواعد',         en: 'Rules' } },
+      { src: 'assets/baloot/06settings.webp',  cap: { ar: 'الإعدادات',       en: 'Settings' } }
+    ],
+    rating: null,
+    version: '1.6.13',
+    sizeMB: 17,
+    url: 'downloads/baloot-calculator-v1.6.13.apk'
+  },
+  {
+    id: 'papers-please-ar',
+    type: 'mod',
+    name: { ar: 'تعريب Papers, Please', en: 'Papers, Please — Arabic' },
+    desc: {
+      ar: 'تعريب كامل وغير رسمي للعبة Papers, Please: كل النصوص و117 صورة من الوثائق والواجهات، مع خطوط عربية مرسومة بكسل بكسل لتناسب اللعبة.',
+      en: 'A complete unofficial Arabic translation of Papers, Please: all in-game text plus 117 document and UI images, with pixel fonts drawn to match the game.'
+    },
+    tags: [{ ar: 'تعريب ألعاب', en: 'Game translation' }, { ar: 'PC', en: 'PC' }],
+    install: [
+      { ar: 'افتح مجلد اللعبة من Steam: كليك يمين على اللعبة ← Manage ← Browse local files', en: 'Open the game folder from Steam: right-click the game → Manage → Browse local files' },
+      { ar: 'ادخل المجلد <bdi dir="ltr" class="rounded bg-white/5 px-1.5 py-0.5 font-mono text-[11px]">PapersPlease_Data\\StreamingAssets\\loc</bdi>', en: 'Go into <bdi dir="ltr" class="rounded bg-white/5 px-1.5 py-0.5 font-mono text-[11px]">PapersPlease_Data\\StreamingAssets\\loc</bdi>' },
+      { ar: 'خذ نسخة احتياطية من ملف <bdi dir="ltr">eu.zip</bdi> الموجود هناك', en: 'Back up the <bdi dir="ltr">eu.zip</bdi> file already there' },
+      { ar: 'حط ملف <bdi dir="ltr">eu.zip</bdi> الجديد مكانه', en: 'Put the new <bdi dir="ltr">eu.zip</bdi> in its place' },
+      { ar: 'شغّل اللعبة واختر Euskara من Settings ← Language', en: 'Launch the game and pick Euskara in Settings → Language' }
+    ],
+    note: {
+      ar: 'التعريب مجاني وغير رسمي، واللعبة ملك مطوّرها Lucas Pope. للرجوع للأصل رجّع ملف <bdi dir="ltr">eu.zip</bdi> القديم.',
+      en: 'This translation is free and unofficial; the game belongs to its developer, Lucas Pope. To revert, restore the old <bdi dir="ltr">eu.zip</bdi>.'
+    },
+    rating: null,
+    version: '1.0',
+    sizeMB: 0.4,
+    url: 'downloads/papers-please-arabic-v1.0.zip',
+    dl: 'card_dl_mod'
+  }
+];
+
+/* ===================================================================== */
+
+const I18N = {
+  ar: {
+    meta_title: 'Khaldz — تطبيقات وألعاب عربية للجوال',
+    meta_desc: 'تطبيقات أندرويد وألعاب 2D عربية مجانية للتحميل مباشرة بصيغة APK.',
+    nav_home: 'الرئيسية', nav_apps: 'تطبيقات', nav_games: 'ألعاب', nav_about: 'حولنا', nav_contact: 'اتصل بنا',
+    hero_badge: 'جديد: حاسبة البلوت 1.6.13',
+    hero_t1: 'استكشف أحدث', hero_t2: 'تطبيقاتنا وألعابنا',
+    hero_sub: 'تطبيقات أندرويد عربية تسهّل يومك، وألعاب 2D نصنعها بشغف. كلها مجانية وتنزل مباشرة على جوالك.',
+    hero_cta: 'استكشف الأعمال', hero_cta2: 'تواصل معنا',
+    stat1_l: 'مجانية', stat2_l: 'تحميل مباشر', stat3_l: 'واجهة عربية', stat3_v: 'عربي',
+    chip_free: 'مجاني 100%',
+    work_eyebrow: 'المعرض', work_title: 'تطبيقات وألعاب', work_sub: 'اختر العمل وحمّله مباشرة على جوالك الأندرويد.',
+    f_all: 'الكل', f_app: 'تطبيقات', f_game: 'ألعاب', f_mod: 'تعريبات',
+    card_dl: 'تحميل APK', card_soon: 'قريبًا', card_new: 'جديد', card_v: 'إصدار', card_in_dev: 'قيد التطوير',
+    mb: 'م.ب', empty: 'لا توجد أعمال في هذا القسم بعد.', t_app: 'تطبيق', t_game: 'لعبة', t_mod: 'تعريب',
+    card_dl_mod: 'تحميل التعريب', install: 'طريقة التركيب', view_install: 'طريقة التركيب',
+    about_eyebrow: 'حولنا', about_title: 'نصنع أدوات وألعاب نحتاجها فعلًا',
+    about_p: 'مطوّر مستقل يبني تطبيقات عربية بـ Flutter وألعاب ثنائية الأبعاد بمحرك Godot. نبدأ من فكرة نحتاجها في يومنا — مثل حاسبة البلوت — ونطوّرها لين تصير جاهزة للجميع.',
+    about_c1_t: 'تطبيقات Flutter', about_c1_d: 'خفيفة وسريعة وتشتغل على أغلب أجهزة أندرويد.',
+    about_c2_t: 'ألعاب 2D', about_c2_d: 'ألعاب بمحرك Godot بأسلوب بسيط وممتع.',
+    about_c3_t: 'مجانية دائمًا', about_c3_d: 'تحميل مباشر بدون اشتراك أو تسجيل.',
+    contact_eyebrow: 'اتصل بنا', contact_title: 'عندك فكرة أو ملاحظة؟',
+    contact_sub: 'راسلنا لأي اقتراح، أو مشكلة في أحد التطبيقات، أو فكرة تبيها تتحول للعبة.',
+    contact_btn: 'أرسل بريدًا',
+    footer_tag: '— تطبيقات وألعاب عربية مجانية', footer_privacy: 'سياسة الخصوصية', footer_terms: 'الشروط والأحكام',
+    footer_rights: 'جميع الحقوق محفوظة.',
+    shots_n: 'صور', view_shots: 'عرض الصور', view_details: 'الصور والمميزات', features: 'المميزات',
+    privacy_title: 'سياسة الخصوصية',
+    privacy_body: `<p>آخر تحديث: سبتمبر 2026</p>
+      <h3>الموقع</h3><p>لا يطلب الموقع تسجيل حساب ولا يجمع بياناتك الشخصية مباشرة. يحفظ متصفحك فقط اختيارك للغة.</p>
+      <h3>الإعلانات وملفات تعريف الارتباط</h3><p>قد يعرض الموقع إعلانات من Google AdSense. تستخدم Google وشركاؤها ملفات تعريف الارتباط لعرض إعلانات بناءً على زياراتك لهذا الموقع أو غيره. يمكنك إيقاف الإعلانات المخصّصة من <a class="text-teal-300 underline" href="https://adssettings.google.com" target="_blank" rel="noopener">إعدادات الإعلانات في Google</a>.</p>
+      <h3>التطبيقات</h3><p>التطبيقات المنشورة هنا لا تجمع بياناتك الشخصية ما لم يُذكر غير ذلك في وصفها.</p>`,
+    terms_title: 'الشروط والأحكام',
+    terms_body: `<h3>الاستخدام</h3><p>التطبيقات والألعاب مقدّمة مجانًا للاستخدام الشخصي، كما هي، دون أي ضمانات.</p>
+      <h3>الملكية</h3><p>جميع الأعمال وتصاميمها مملوكة لصاحب الموقع. لا يجوز إعادة نشرها أو بيعها أو تعديلها دون إذن.</p>
+      <h3>المسؤولية</h3><p>ثبّت الملفات من هذا الموقع فقط. لا نتحمّل مسؤولية نسخ معدّلة منشورة في مواقع أخرى.</p>`,
+    nav_support: 'ادعمنا', sup_title: 'ادعمنا',
+    sup_body: 'كل تطبيقاتنا وألعابنا مجانية. تقدر تدعمنا بمشاهدة إعلان قصير، ودخله يساعدنا نستمر ونطوّر أعمال جديدة.',
+    sup_watch: 'شاهد إعلان', sup_note: 'اختياري تمامًا، والإعلان يأخذ ثواني.',
+    sup_loading: 'نجهّز الإعلان…', sup_ready: 'الإعلان جاهز', sup_start: 'ابدأ المشاهدة',
+    sup_unavailable: 'ما فيه إعلان متاح الحين. جرّب بعد شوي.', sup_retry: 'حاول مرة ثانية',
+    sup_soon: 'خانة الإعلانات تتفعّل قريبًا. شكرًا على رغبتك في دعمنا!',
+    sup_thanks: 'شكرًا لدعمك!', sup_thanks_sub: 'مشاهدتك تفرق معنا فعلًا.', sup_again: 'شاهد إعلان آخر',
+    close: 'إغلاق'
+  },
+  en: {
+    meta_title: 'Khaldz — Mobile Apps & 2D Games',
+    meta_desc: 'Free Android apps and 2D games, downloadable directly as APK.',
+    nav_home: 'Home', nav_apps: 'Apps', nav_games: 'Games', nav_about: 'About', nav_contact: 'Contact',
+    hero_badge: 'New: Baloot Calculator 1.6.13',
+    hero_t1: 'Explore our latest', hero_t2: 'apps & games',
+    hero_sub: 'Arabic-first Android apps that make everyday life easier, and 2D games built with passion. All free, straight to your phone.',
+    hero_cta: 'Explore the work', hero_cta2: 'Get in touch',
+    stat1_l: 'Free', stat2_l: 'Direct download', stat3_l: 'Arabic UI', stat3_v: 'AR',
+    chip_free: '100% free',
+    work_eyebrow: 'Showcase', work_title: 'Apps & Games', work_sub: 'Pick a project and install it straight on your Android phone.',
+    f_all: 'All', f_app: 'Apps', f_game: 'Games', f_mod: 'Translations',
+    card_dl: 'Download APK', card_soon: 'Coming soon', card_new: 'New', card_v: 'v', card_in_dev: 'In development',
+    mb: 'MB', empty: 'Nothing here yet.', t_app: 'App', t_game: 'Game', t_mod: 'Translation',
+    card_dl_mod: 'Download translation', install: 'How to install', view_install: 'How to install',
+    about_eyebrow: 'About', about_title: 'We build the tools and games we actually need',
+    about_p: 'An independent developer building Arabic apps with Flutter and 2D games with Godot. Every project starts from a real need — like the Baloot Calculator — and grows until it is ready for everyone.',
+    about_c1_t: 'Flutter apps', about_c1_d: 'Lightweight, fast, and runs on most Android devices.',
+    about_c2_t: '2D games', about_c2_d: 'Simple, fun games made with the Godot engine.',
+    about_c3_t: 'Always free', about_c3_d: 'Direct download, no subscription or sign-up.',
+    contact_eyebrow: 'Contact', contact_title: 'Got an idea or feedback?',
+    contact_sub: 'Reach out with suggestions, a bug in one of the apps, or an idea you would love to see become a game.',
+    contact_btn: 'Send an email',
+    footer_tag: '— Free Arabic apps & games', footer_privacy: 'Privacy Policy', footer_terms: 'Terms of Use',
+    footer_rights: 'All rights reserved.',
+    shots_n: 'screenshots', view_shots: 'View screenshots', view_details: 'Screenshots & features', features: 'Features',
+    privacy_title: 'Privacy Policy',
+    privacy_body: `<p>Last updated: September 2026</p>
+      <h3>This website</h3><p>No account is required and no personal data is collected directly. Your browser only stores your language choice.</p>
+      <h3>Ads and cookies</h3><p>This site may show ads from Google AdSense. Google and its partners use cookies to serve ads based on your visits to this and other sites. You can opt out of personalized ads in <a class="text-teal-300 underline" href="https://adssettings.google.com" target="_blank" rel="noopener">Google Ad Settings</a>.</p>
+      <h3>Apps</h3><p>Apps published here do not collect personal data unless stated otherwise in their description.</p>`,
+    terms_title: 'Terms of Use',
+    terms_body: `<h3>Use</h3><p>Apps and games are provided free for personal use, as is, without warranty.</p>
+      <h3>Ownership</h3><p>All works and designs belong to the site owner. Do not redistribute, sell, or modify them without permission.</p>
+      <h3>Liability</h3><p>Only install files downloaded from this site. We are not responsible for modified copies published elsewhere.</p>`,
+    nav_support: 'Support', sup_title: 'Support us',
+    sup_body: 'All our apps and games are free. You can support us by watching a short ad — it helps us keep going and build new things.',
+    sup_watch: 'Watch an ad', sup_note: 'Totally optional, and it only takes a few seconds.',
+    sup_loading: 'Preparing the ad…', sup_ready: 'Your ad is ready', sup_start: 'Start watching',
+    sup_unavailable: 'No ad is available right now. Try again in a bit.', sup_retry: 'Try again',
+    sup_soon: 'Ad support is coming soon. Thanks for wanting to help!',
+    sup_thanks: 'Thank you for your support!', sup_thanks_sub: 'It genuinely makes a difference.', sup_again: 'Watch another ad',
+    close: 'Close'
+  }
+};
+
+let lang = 'ar';
+try { lang = localStorage.getItem('lang') || 'ar'; } catch (e) {}
+let filter = 'all';
+const T = () => I18N[lang];
+
+/* ---------- الأيقونة ---------- */
+function iconHtml(w) {
+  return w.icon
+    ? `<img src="${w.icon}" alt="" class="h-full w-full object-cover" loading="lazy">`
+    : `<div class="grid h-full w-full place-items-center bg-teal-600"><i data-lucide="${ ({game: 'gamepad-2', mod: 'languages', app: 'smartphone'})[w.type] || 'smartphone'}" class="h-8 w-8 text-slate-950"></i></div>`;
+}
+
+/* ---------- معاينة الكرت: لقطات حقيقية ---------- */
+function previewHtml(w) {
+  const t = T();
+  if (!w.shots || !w.shots.length) {
+    return `<div class="absolute inset-0 grid place-items-center"><div class="h-24 w-24 overflow-hidden rounded-3xl opacity-80">${iconHtml(w)}</div></div>`;
+  }
+  const side = (shot, pos) => shot ? `<img src="${shot.src}" alt="" loading="lazy"
+      class="absolute top-10 w-28 rounded-[1rem] border border-white/10 opacity-40 transition duration-500 ${pos}">` : '';
+  return `
+    <button type="button" data-gallery="${w.id}" class="absolute inset-0 cursor-zoom-in" aria-label="${t.view_shots}">
+      ${side(w.shots[1], 'left-[8%] -rotate-6 group-hover:-rotate-[9deg]')}
+      ${side(w.shots[3], 'right-[8%] rotate-6 group-hover:rotate-[9deg]')}
+      <img src="${w.shots[0].src}" alt="${w.shots[0].cap[lang]}" loading="lazy"
+        class="absolute left-1/2 top-5 w-32 -translate-x-1/2 rounded-[1.1rem] border border-white/15 shadow-2xl shadow-black/60 transition duration-500 group-hover:-translate-y-1.5">
+      <span class="glass absolute bottom-3 end-3 inline-flex items-center gap-1.5 rounded-full border border-white/10 px-2.5 py-1 text-[11px] font-medium text-slate-200">
+        <i data-lucide="images" class="h-3.5 w-3.5"></i>${w.shots.length} ${t.shots_n}</span>
+    </button>`;
+}
+
+function stars(rating) {
+  return `<span class="inline-flex items-center gap-1 text-xs font-semibold text-amber-300" aria-label="${rating} / 5">
+    ${Array.from({ length: 5 }, (_, i) => `<i data-lucide="star" class="h-3.5 w-3.5 ${i < Math.round(rating) ? 'fill-amber-400 text-amber-400' : 'text-slate-600'}"></i>`).join('')}
+    <span class="ms-0.5">${rating.toFixed(1)}</span></span>`;
+}
+
+function downloadBtn(w) {
+  const t = T();
+  return w.soon
+    ? `<span class="inline-flex cursor-not-allowed items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-slate-400">
+         <i data-lucide="clock" class="h-4 w-4"></i>${t.card_soon}</span>`
+    : `<a href="${w.url}" download class="inline-flex items-center gap-2 rounded-xl bg-teal-500 px-4 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-teal-400 active:scale-[.98]">
+         <i data-lucide="download" class="h-4 w-4"></i>${t[w.dl] || t.card_dl}</a>`;
+}
+
+/* ---------- الكرت ---------- */
+function card(w, i) {
+  const t = T();
+  const typeLabel = t['t_' + w.type] || t.t_app;
+  const rating = w.rating != null
+    ? stars(w.rating)
+    : `<span class="inline-flex items-center gap-1 rounded-full bg-teal-400/10 px-2.5 py-1 text-xs font-medium text-teal-300 ring-1 ring-teal-400/25">
+         <i data-lucide="sparkles" class="h-3.5 w-3.5"></i>${w.soon ? t.card_in_dev : t.card_new}</span>`;
+
+  const meta = w.soon
+    ? `<span class="text-xs text-slate-500">${t.card_in_dev}</span>`
+    : `<span class="flex flex-col text-xs leading-5">
+         <span class="font-semibold text-slate-200">${w.sizeMB} ${t.mb}</span>
+         <span class="text-slate-500">${t.card_v} ${w.version}</span></span>`;
+
+  return `
+    <article class="glass glow-border group rise relative flex flex-col overflow-hidden rounded-3xl border border-white/5 transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_-24px_rgba(0,0,0,.7)]" style="animation-delay:${i * 80}ms">
+      <div class="relative h-56 overflow-hidden border-b border-white/5 bg-[radial-gradient(circle_at_50%_0%,rgba(45,212,191,.07),transparent_65%)]">
+        ${previewHtml(w)}
+        <span class="glass pointer-events-none absolute end-3 top-3 z-10 rounded-full border border-white/10 px-2.5 py-1 text-[11px] font-medium text-slate-200">${typeLabel}</span>
+      </div>
+      <div class="flex flex-1 flex-col p-5">
+        <div class="-mt-12 mb-4 flex items-end justify-between">
+          <div class="relative z-10 h-16 w-16 overflow-hidden rounded-2xl shadow-xl ring-4 ring-ink">${iconHtml(w)}</div>
+          ${rating}
+        </div>
+        <h3 class="text-lg font-bold text-white">${w.name[lang]}</h3>
+        <div class="mt-2 flex flex-wrap gap-1.5">
+          ${w.tags.map(tag => `<span class="rounded-md bg-teal-400/10 px-2 py-0.5 text-[11px] font-medium text-teal-300">${tag[lang]}</span>`).join('')}
+        </div>
+        <p class="mt-3 flex-1 text-sm leading-7 text-slate-400">${w.desc[lang]}</p>
+        ${(w.shots || w.install) ? `<button type="button" data-gallery="${w.id}" class="mt-3 inline-flex items-center gap-1.5 self-start text-sm font-medium text-teal-300 transition hover:text-teal-200">
+          <i data-lucide="${w.shots ? 'images' : 'wrench'}" class="h-4 w-4"></i>${w.shots ? t.view_details : t.view_install}</button>` : ''}
+        <div class="mt-5 flex items-center justify-between gap-3 border-t border-white/5 pt-4">
+          ${meta}
+          ${downloadBtn(w)}
+        </div>
+      </div>
+    </article>`;
+}
+
+/* ---------- نافذة الصور والمميزات ---------- */
+function openGallery(id) {
+  const w = WORKS.find(x => x.id === id);
+  if (!w) return;
+  const t = T();
+  document.getElementById('galleryHead').innerHTML = `
+    <div class="h-11 w-11 shrink-0 overflow-hidden rounded-xl">${iconHtml(w)}</div>
+    <div class="min-w-0"><h2 class="truncate text-lg font-bold text-white">${w.name[lang]}</h2>
+      <p class="text-xs text-slate-500">${t.card_v} ${w.version || ''}${w.sizeMB ? ' · ' + w.sizeMB + ' ' + t.mb : ''}</p></div>`;
+  const shotsHtml = (w.shots || []).length ? `
+    <div class="shots-scroll -mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-3">
+      ${(w.shots || []).map(sh => `
+        <figure class="w-44 shrink-0 snap-start sm:w-48">
+          <img src="${sh.src}" alt="${sh.cap[lang]}" class="w-full rounded-2xl border border-white/10">
+          <figcaption class="mt-2 text-center text-xs text-slate-400">${sh.cap[lang]}</figcaption>
+        </figure>`).join('')}
+    </div>` : '';
+
+  const installHtml = w.install ? `<h3 class="font-semibold text-white">${t.install}</h3>
+    <ol class="mt-3 space-y-3">
+      ${w.install.map((step, n) => `<li class="flex gap-3 text-sm leading-7 text-slate-300">
+        <span class="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-teal-400/15 text-xs font-bold text-teal-300">${n + 1}</span>
+        <span>${step[lang]}</span></li>`).join('')}
+    </ol>
+    ${w.note ? `<p class="mt-5 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-xs leading-6 text-slate-400">${w.note[lang]}</p>` : ''}` : '';
+
+  document.getElementById('galleryBody').innerHTML = shotsHtml + installHtml + `
+    ${w.features ? `<h3 class="mt-6 font-semibold text-white">${t.features}</h3>
+    <ul class="mt-3 grid gap-2.5 sm:grid-cols-2">
+      ${w.features.map(f => `<li class="flex items-start gap-2 text-sm leading-6 text-slate-300">
+        <i data-lucide="check" class="mt-1 h-4 w-4 shrink-0 text-teal-300"></i>${f[lang]}</li>`).join('')}
+    </ul>` : ''}
+    <div class="mt-6 flex justify-end border-t border-white/5 pt-5">${downloadBtn(w)}</div>`;
+  lucide.createIcons();
+  document.getElementById('gallery').showModal();
+}
+
+/* ---------- العرض ---------- */
+function renderFilters() {
+  const t = T();
+  const count = (type) => type === 'all' ? WORKS.length : WORKS.filter(w => w.type === type).length;
+
+  // الأقسام الفاضية تختفي تلقائيًا، وترجع أول ما تضيف عملًا من نوعها
+  const types = ['app', 'game', 'mod'].filter(f => count(f) > 0);
+  document.querySelectorAll('[data-filter-link]').forEach(a => a.classList.toggle('hidden', count(a.dataset.filterLink) === 0));
+  if (filter !== 'all' && count(filter) === 0) filter = 'all';
+
+  const bar = document.getElementById('filters');
+  bar.classList.toggle('hidden', types.length < 2);   // نوع واحد فقط؟ لا داعي لأزرار الفرز
+  bar.innerHTML = ['all', ...types].map(f => `
+    <button type="button" role="tab" aria-selected="${filter === f}" data-filter="${f}"
+      class="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition ${filter === f
+        ? 'bg-white/10 text-white ring-1 ring-white/10'
+        : 'text-slate-400 hover:text-white'}">
+      ${t['f_' + f]}<span class="rounded-md bg-white/10 px-1.5 text-[11px] text-slate-300">${count(f)}</span>
+    </button>`).join('');
+}
+
+function renderWorks() {
+  const list = WORKS.filter(w => filter === 'all' || w.type === filter);
+  document.getElementById('grid').innerHTML = list.length
+    ? list.map(card).join('')
+    : `<p class="col-span-full rounded-2xl border border-dashed border-white/10 py-16 text-center text-slate-500">${T().empty}</p>`;
+  renderFilters();
+  lucide.createIcons();
+}
+
+function applyLang() {
+  const t = T();
+  const root = document.documentElement;
+  root.lang = lang;
+  root.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  document.title = t.meta_title;
+  document.querySelector('meta[name="description"]').content = t.meta_desc;
+
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t[el.dataset.i18n]; });
+  document.querySelectorAll('[data-site-name]').forEach(el => { el.textContent = SITE.name[lang]; });
+  document.querySelectorAll('[data-hero-size]').forEach(el => { el.textContent = `${WORKS[0].sizeMB} ${t.mb}`; });
+  document.querySelectorAll('[data-lang-opt]').forEach(el => {
+    const on = el.dataset.langOpt === lang;
+    el.className = 'rounded-full px-3 py-1.5 transition ' + (on ? 'bg-teal-500 text-slate-950' : 'text-slate-400');
+  });
+
+  const hero = WORKS[0];
+  document.getElementById('heroScreen').innerHTML = `<img src="${hero.shots[0].src}" alt="${hero.shots[0].cap[lang]}" class="block w-full">`;
+  renderWorks();
+  if (typeof renderSupport === 'function' && supportDlg.open) renderSupport();
+}
+
+/* ---------- الأحداث ---------- */
+document.getElementById('langToggle').addEventListener('click', () => {
+  lang = lang === 'ar' ? 'en' : 'ar';
+  try { localStorage.setItem('lang', lang); } catch (e) {}
+  applyLang();
+});
+
+document.getElementById('filters').addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-filter]');
+  if (!btn) return;
+  filter = btn.dataset.filter;
+  renderWorks();
+});
+
+const menu = document.getElementById('mobileMenu');
+const menuBtn = document.getElementById('menuBtn');
+menuBtn.addEventListener('click', () => {
+  const open = menu.classList.toggle('hidden') === false;
+  menuBtn.setAttribute('aria-expanded', open);
+});
+
+document.querySelectorAll('#header nav a, #mobileMenu a').forEach(a => a.addEventListener('click', () => {
+  menu.classList.add('hidden');
+  menuBtn.setAttribute('aria-expanded', 'false');
+  if (a.dataset.filterLink) { filter = a.dataset.filterLink; renderWorks(); }
+}));
+
+const header = document.getElementById('header');
+const onScroll = () => {
+  const s = window.scrollY > 8;
+  header.classList.toggle('bg-ink/75', s);
+  header.classList.toggle('backdrop-blur-xl', s);
+  header.classList.toggle('border-white/5', s);
+};
+window.addEventListener('scroll', onScroll, { passive: true });
+onScroll();
+
+const legal = document.getElementById('legal');
+document.querySelectorAll('[data-legal]').forEach(b => b.addEventListener('click', () => {
+  const t = T();
+  const key = b.dataset.legal;
+  document.getElementById('legalTitle').textContent = t[key + '_title'];
+  document.getElementById('legalBody').innerHTML = t[key + '_body'];
+  legal.showModal();
+}));
+document.getElementById('legalClose').addEventListener('click', () => legal.close());
+legal.addEventListener('click', (e) => { if (e.target === legal) legal.close(); });
+
+/* ---------- ادعمنا: إعلان بمكافأة ---------- */
+const supportDlg = document.getElementById('support');
+let supState = 'idle';
+let rewardedSlot = null;
+let rewardedReady = null;
+let rewardGranted = false;
+let supTimer = null;
+
+function renderSupport() {
+  const t = T();
+  const btn = (label, icon, act) => `<button type="button" data-sup="${act}"
+    class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-teal-500 px-6 py-3.5 font-semibold text-slate-950 transition hover:bg-teal-400">
+    <i data-lucide="${icon}" class="h-5 w-5"></i>${label}</button>`;
+  const msg = (icon, color, text) => `<p class="flex items-center justify-center gap-2 text-sm ${color}">
+    <i data-lucide="${icon}" class="h-4 w-4 shrink-0"></i>${text}</p>`;
+  const views = {
+    idle:        btn(t.sup_watch, 'play-circle', 'watch') + `<p class="mt-3 text-xs text-slate-500">${t.sup_note}</p>`,
+    loading:     `<p class="flex items-center justify-center gap-2 py-3.5 text-sm text-slate-300">
+                    <i data-lucide="loader-2" class="h-5 w-5 animate-spin text-teal-300"></i>${t.sup_loading}</p>`,
+    ready:       `<p class="mb-3 text-sm text-teal-300">${t.sup_ready}</p>` + btn(t.sup_start, 'play', 'show'),
+    unavailable: msg('info', 'text-slate-400', t.sup_unavailable) +
+                 `<button type="button" data-sup="watch" class="mt-4 text-sm font-medium text-teal-300 hover:text-teal-200">${t.sup_retry}</button>`,
+    soon:        msg('clock', 'text-slate-400', t.sup_soon),
+    thanks:      `<span class="mx-auto grid h-12 w-12 place-items-center rounded-full bg-teal-400/15 text-teal-300"><i data-lucide="check" class="h-6 w-6"></i></span>
+                  <p class="mt-3 font-semibold text-white">${t.sup_thanks}</p>
+                  <p class="mt-1 text-sm text-slate-400">${t.sup_thanks_sub}</p>
+                  <button type="button" data-sup="watch" class="mt-4 text-sm font-medium text-teal-300 hover:text-teal-200">${t.sup_again}</button>`
+  };
+  document.getElementById('supportState').innerHTML = views[supState];
+  lucide.createIcons();
+}
+
+function setSupport(state) {
+  supState = state;
+  clearTimeout(supTimer);
+  renderSupport();
+}
+
+function loadGpt() {
+  return new Promise((resolve, reject) => {
+    if (window.googletag && googletag.apiReady) return resolve();
+    window.googletag = window.googletag || { cmd: [] };
+    const sc = document.createElement('script');
+    sc.async = true;
+    sc.src = 'https://securepubads.g.doubleclick.net/tag/js/gpt.js';
+    sc.onload = resolve;
+    sc.onerror = reject;
+    document.head.appendChild(sc);
+  });
+}
+
+function clearRewarded() {
+  if (rewardedSlot && window.googletag) googletag.destroySlots([rewardedSlot]);
+  rewardedSlot = null;
+  rewardedReady = null;
+}
+
+async function watchAd() {
+  if (!SUPPORT.adUnit) return setSupport('soon');
+  setSupport('loading');
+  try { await loadGpt(); } catch (e) { return setSupport('unavailable'); }
+
+  googletag.cmd.push(() => {
+    clearRewarded();
+    rewardGranted = false;
+    rewardedSlot = googletag.defineOutOfPageSlot(SUPPORT.adUnit, googletag.enums.OutOfPageFormat.REWARDED);
+    if (!rewardedSlot) return setSupport('unavailable');   // الصفحة أو الجهاز ما يدعم هذا النوع
+    rewardedSlot.addService(googletag.pubads());
+
+    if (!window.__rewardedListeners) {
+      window.__rewardedListeners = true;
+      const pub = googletag.pubads();
+      pub.addEventListener('rewardedSlotReady', (e) => {
+        if (e.slot !== rewardedSlot) return;
+        rewardedReady = e;
+        setSupport('ready');
+      });
+      pub.addEventListener('rewardedSlotGranted', (e) => {
+        if (e.slot === rewardedSlot) rewardGranted = true;
+      });
+      pub.addEventListener('rewardedSlotClosed', (e) => {
+        if (e.slot !== rewardedSlot) return;
+        clearRewarded();
+        setSupport(rewardGranted ? 'thanks' : 'idle');
+        if (!supportDlg.open) supportDlg.showModal();
+      });
+      pub.addEventListener('slotRenderEnded', (e) => {
+        if (e.slot === rewardedSlot && e.isEmpty) { clearRewarded(); setSupport('unavailable'); }
+      });
+    }
+
+    googletag.enableServices();
+    googletag.display(rewardedSlot);
+    supTimer = setTimeout(() => { if (supState === 'loading') { clearRewarded(); setSupport('unavailable'); } }, 12000);
+  });
+}
+
+document.querySelectorAll('[data-support]').forEach(b => b.addEventListener('click', () => {
+  menu.classList.add('hidden');
+  if (supState !== 'loading' && supState !== 'ready') supState = 'idle';
+  renderSupport();
+  supportDlg.showModal();
+}));
+
+supportDlg.addEventListener('click', (e) => {
+  if (e.target === supportDlg || e.target.closest('[data-close]')) return supportDlg.close();
+  const a = e.target.closest('[data-sup]');
+  if (!a) return;
+  if (a.dataset.sup === 'watch') watchAd();
+  if (a.dataset.sup === 'show' && rewardedReady) { supportDlg.close(); rewardedReady.makeRewardedVisible(); }
+});
+
+const gallery = document.getElementById('gallery');
+gallery.addEventListener('click', (e) => { if (e.target === gallery || e.target.closest('[data-close]')) gallery.close(); });
+document.getElementById('grid').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-gallery]');
+  if (b) openGallery(b.dataset.gallery);
+});
+
+document.getElementById('contactBtn').href = 'mailto:' + SITE.email;
+document.querySelector('[data-contact-email]').textContent = SITE.email;
+document.getElementById('year').textContent = new Date().getFullYear();
+
+applyLang();
+</script>
+</body>
+</html>
