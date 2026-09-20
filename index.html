@@ -379,10 +379,49 @@ const WORKS = [
       ar: 'التعريب مجاني وغير رسمي، واللعبة ملك مطوّرها Lucas Pope. للرجوع للأصل رجّع ملف <bdi dir="ltr">eu.zip</bdi> القديم.',
       en: 'This translation is free and unofficial; the game belongs to its developer, Lucas Pope. To revert, restore the old <bdi dir="ltr">eu.zip</bdi>.'
     },
+    wide: true,
+    shots: [
+      { src: 'assets/papers/01booth.webp',   cap: { ar: 'فحص الوثائق',   en: 'Inspecting papers' } },
+      { src: 'assets/papers/02rules.webp',   cap: { ar: 'كتاب القواعد',  en: 'The rule book' } },
+      { src: 'assets/papers/03bulletin.webp',cap: { ar: 'النشرة الرسمية', en: 'Daily bulletin' } },
+      { src: 'assets/papers/04news.webp',    cap: { ar: 'الجريدة',        en: 'Newspaper' } }
+    ],
     rating: null,
     version: '1.0',
     sizeMB: 0.4,
     url: 'downloads/papers-please-arabic-v1.0.zip',
+    dl: 'card_dl_mod'
+  },
+  {
+    id: 'dark-cloud-ar',
+    type: 'mod',
+    name: { ar: 'تعريب Dark Cloud', en: 'Dark Cloud — Arabic' },
+    desc: {
+      ar: 'تعريب كامل للعبة Dark Cloud على بلايستيشن 2: القصة والحوارات والقوائم والدليل والمتاجر، مع خط عربي مدمج وصور واجهات معرّبة. يُركَّب كملف ترقيع على نسختك من اللعبة.',
+      en: 'A full Arabic translation of Dark Cloud for PlayStation 2: story, dialogue, menus, guide and shops, with a built-in Arabic font and translated UI images. Applied as a patch to your own copy of the game.'
+    },
+    tags: [{ ar: 'تعريب ألعاب', en: 'Game translation' }, { ar: 'بلايستيشن 2', en: 'PlayStation 2' }],
+    wide: true,
+    shots: [
+      { src: 'assets/darkcloud/01title.webp', cap: { ar: 'شاشة البداية', en: 'Title screen' } },
+      { src: 'assets/darkcloud/02talk.webp',  cap: { ar: 'حوارات البلدة', en: 'Town dialogue' } },
+      { src: 'assets/darkcloud/03scene.webp', cap: { ar: 'مشاهد القصة',  en: 'Story scenes' } }
+    ],
+    install: [
+      { ar: 'حمّل برنامج <bdi dir="ltr">PPF-O-Matic 3</bdi> (برنامج مجاني صغير لتركيب ملفات الترقيع)', en: 'Download <bdi dir="ltr">PPF-O-Matic 3</bdi>, a small free tool for applying patch files' },
+      { ar: 'خذ نسخة احتياطية من ملف الـ ISO الخاص بك', en: 'Back up your own ISO file' },
+      { ar: 'افتح البرنامج، واختر في <bdi dir="ltr">ISO file</bdi> نسخة <bdi dir="ltr">Dark Cloud (USA)</bdi> عندك', en: 'Open the tool and pick your <bdi dir="ltr">Dark Cloud (USA)</bdi> ISO under <bdi dir="ltr">ISO file</bdi>' },
+      { ar: 'اختر في <bdi dir="ltr">Patch file</bdi> ملف <bdi dir="ltr">DarkCloud-Arabic-v1.0.ppf</bdi>', en: 'Pick <bdi dir="ltr">DarkCloud-Arabic-v1.0.ppf</bdi> under <bdi dir="ltr">Patch file</bdi>' },
+      { ar: 'اضغط <bdi dir="ltr">Apply</bdi>، وشغّل اللعبة على محاكي PCSX2', en: 'Click <bdi dir="ltr">Apply</bdi>, then run the game in the PCSX2 emulator' }
+    ],
+    note: {
+      ar: 'الترقيع يشتغل على نسخة <bdi dir="ltr">Dark Cloud (USA)</bdi> وحجمها 1,797,980,160 بايت. لا نوزّع اللعبة نفسها؛ لازم تكون عندك نسختك. اللعبة ملك Sony وLevel-5، والتعريب مجاني وغير رسمي. الحفظات القديمة يظهر فيها اسم البطل بحروف مكسّرة، فالأفضل تبدأ لعبة جديدة.',
+      en: 'The patch targets the <bdi dir="ltr">Dark Cloud (USA)</bdi> release, 1,797,980,160 bytes. The game itself is not distributed — you need your own copy. The game belongs to Sony and Level-5; this translation is free and unofficial. Old saves show the hero name garbled, so starting a new game is better.'
+    },
+    rating: null,
+    version: '1.0',
+    sizeMB: 3.1,
+    url: 'downloads/dark-cloud-arabic-v1.0.zip',
     dl: 'card_dl_mod'
   }
 ];
@@ -498,6 +537,15 @@ function previewHtml(w) {
   if (!w.shots || !w.shots.length) {
     return `<div class="absolute inset-0 grid place-items-center"><div class="h-24 w-24 overflow-hidden rounded-3xl opacity-80">${iconHtml(w)}</div></div>`;
   }
+  if (w.wide) {
+    return `
+      <button type="button" data-gallery="${w.id}" class="absolute inset-0 cursor-zoom-in" aria-label="${t.view_shots}">
+        <img src="${w.shots[0].src}" alt="${w.shots[0].cap[lang]}" loading="lazy"
+          class="absolute inset-x-5 top-6 rounded-xl border border-white/15 shadow-2xl shadow-black/60 transition duration-500 group-hover:-translate-y-1.5">
+        <span class="glass absolute bottom-3 end-3 inline-flex items-center gap-1.5 rounded-full border border-white/10 px-2.5 py-1 text-[11px] font-medium text-slate-200">
+          <i data-lucide="images" class="h-3.5 w-3.5"></i>${w.shots.length} ${t.shots_n}</span>
+      </button>`;
+  }
   const side = (shot, pos) => shot ? `<img src="${shot.src}" alt="" loading="lazy"
       class="absolute top-10 w-28 rounded-[1rem] border border-white/10 opacity-40 transition duration-500 ${pos}">` : '';
   return `
@@ -579,13 +627,13 @@ function openGallery(id) {
   const shotsHtml = (w.shots || []).length ? `
     <div class="shots-scroll -mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-3">
       ${(w.shots || []).map(sh => `
-        <figure class="w-44 shrink-0 snap-start sm:w-48">
+        <figure class="${w.wide ? 'w-80 sm:w-96' : 'w-44 sm:w-48'} shrink-0 snap-start">
           <img src="${sh.src}" alt="${sh.cap[lang]}" class="w-full rounded-2xl border border-white/10">
           <figcaption class="mt-2 text-center text-xs text-slate-400">${sh.cap[lang]}</figcaption>
         </figure>`).join('')}
     </div>` : '';
 
-  const installHtml = w.install ? `<h3 class="font-semibold text-white">${t.install}</h3>
+  const installHtml = w.install ? `<h3 class="${shotsHtml ? 'mt-6 ' : ''}font-semibold text-white">${t.install}</h3>
     <ol class="mt-3 space-y-3">
       ${w.install.map((step, n) => `<li class="flex gap-3 text-sm leading-7 text-slate-300">
         <span class="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-teal-400/15 text-xs font-bold text-teal-300">${n + 1}</span>
